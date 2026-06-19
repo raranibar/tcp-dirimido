@@ -1,0 +1,16 @@
+.custom-navbar {
+  background-color: #7f0000; // Cabecera Guinda
+}
+
+.logout-link {
+  transition: opacity 0.2s;
+  &:hover {
+    opacity: 0.85;
+  }
+}
+
+.welcome-text {
+  font-size: 1.35rem;
+  letter-spacing: 0.5px;
+  color: #000000 !important;
+}
