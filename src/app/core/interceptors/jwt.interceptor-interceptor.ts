@@ -10,9 +10,14 @@ export const jwtInterceptorInterceptor: HttpInterceptorFn = (req, next) => {
   if (token){
     req = req.clone({
       setHeaders : {
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
       }
     });
+    //console.log('Cabeceras modificadas con éxito');
+  }else{
+    console.warn('¡Advertencia! No se adjuntó token JWT. La petición podría retornar 401.');
   }
 
   return next(req);

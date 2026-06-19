@@ -1,16 +1,158 @@
-<div class="min-vh-100 d-flex flex-column bg-white">
+<div class="min-vh-100 d-flex flex-column bg-light-gray">
   
   <header class="navbar navbar-dark custom-navbar px-4 py-2 shadow-sm d-flex justify-content-between align-items-center">
     <span class="navbar-brand mb-0 h1 fw-semibold fs-4 text-white m-0">Dirimidos</span>
-    <a href="#" (click)="onLogout($event)" class="text-white text-decoration-none fw-medium fs-5 logout-link">
-      Logout
-    </a>
+    <a href="#" (click)="onLogout($event)" class="text-white text-decoration-none fw-medium fs-5 logout-link">Salir</a>
   </header>
 
-  <main class="flex-grow-1 d-flex align-items-center justify-content-center px-3">
-    <h1 class="welcome-text text-center fw-semibold text-dark">
-      .:: Bienvenido al Sistema de Registro de Dirimidos ::.
-    </h1>
-  </main>
+  <main class="p-4 container bg-white shadow-sm rouded mt-4 mb-4">
+    
+        <div class="p-2 mb-4 bg-light rounded-3 shadow-sm border">
+      <div class="container-fluid py-2">
+        <h1 class="display-5 fw-bold text-primary">DESPACHO DE PRESIDENCIA</h1>
+        <p class="col-md-8 fs-4 text-muted">Registro y Control de Dirimidos.</p>
+      </div>
+    </div>
 
+    <div class="d-flex justify-content-end mb-3">
+      <button class="btn btn-nuevo text-white px-4 py-2" (click)='openCreateModal()'>
+        Nuevo Dirimido
+      </button>
+    </div>
+
+    <div class="table-responsive shadow-sm rounded">
+      <table class="table table-bordered table-striped align-middle m-0 text-center">
+        <thead class="custom-table-header">
+          <tr>
+            <th>ID</th>
+            <th>IdExpediente</th>
+            <th>Número Expediente</th>
+            <th>Magistrado Relator</th>
+            <!--<th>Magistrado CoRelator</th>-->
+            <th>Dirimido a Favor</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of dirimidos(); track item.idDirimido) {
+            <tr>
+              <td>{{ item.idDirimido }}</td>
+              <td>{{ item.idExpediente }}</td>
+              <td>{{ item.numero }}</td>
+              <td>{{ item.nombreRelator }}</td>
+              <td>{{ item.nombreFavor }}</td>
+              <!-- <td>{{ item.dirimidoAFavor }}</td>-->
+              <td>
+                <div class="d-flex gap-2 justify-content-center">
+                  <button class="btn btn-warning btn-sm d-flex align-items-center gap-1 text-dark fw-medium px-3" (click)="openEditModal(item)">
+                     Edit
+                  </button>
+                  <button class="btn btn-danger btn-sm d-flex align-items-center gap-1 fw-medium px-3" (click)="openDeleteModal(item.idDirimido)">
+                     Delete
+                  </button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="7" class="text-muted py-4">No existen registros en el sistema.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </main>
 </div>
+
+@if (showFormModal()) {
+  <div class="modal fade show d-block custom-modal-backdrop" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 card-modal">
+        
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title fw-bold fs-4">
+            {{ isEditMode() ? 'Editar Dirimido' : 'Registrar Dirimido' }}
+          </h5>
+          <button type="button" class="btn-close fs-7" (click)="closeFormModal()"></button>
+        </div>
+
+        <div class="modal-body pt-3">
+          <form [formGroup]="dirimidoForm">
+            
+            <div class="row g-3 mb-3">
+              <div class="col-6">
+                <label class="form-label fw-bold m-0">Expediente</label>
+                <div class="input-group search-input-group">
+                  <input type="text" formControlName="buscarExpediente" class="form-control" placeholder="Buscar Expediente">
+                  <button class="btn btn-outline-secondary border-start-0 bg-white" type="button" (click)="buscarExpediente()">
+                    🔎
+                  </button>
+                </div>
+              </div>
+              <div class="col-6">
+                <label class="form-label fw-bold m-0">Número de Expediente</label>
+                <input type="text" formControlName="numeroExpediente" class="form-control" placeholder="Número de Expediente">
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-bold m-0">Número de Resolución</label>
+              <input type="text" formControlName="numeroResolucion" class="form-control" placeholder="Número de Resolución">
+            </div>
+              
+            <div class="mb-3">
+              <label class="form-label fw-bold m-0">Referencia</label>
+              <!--
+              <input type="text" formControlName="referencia" class="form-control" placeholder="Referencia">
+              -->
+              <textarea formControlName="referencia" class="form-control" placeholder="Referencia" rows="4"></textarea>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-bold m-0">Magistrado Relator</label>
+              <input type="text" formControlName="magistradoRelator" class="form-control" placeholder="Magistrado Relator">
+            </div>
+    
+            <div class="mb-3">
+              <label class="form-label fw-bold m-0">Magistrado CoRelator</label>
+              <input type="text" formControlName="magistradoCoRelator" class="form-control" placeholder="Magistrado CoRelator">
+            </div>
+     
+            <div class="mb-4">
+              <label class="form-label fw-bold m-0">Dirimido a favor de</label>
+              <select formControlName="dirimidoAFavor" class="form-select">
+                <option value="" disabled selected>Elegir Dirimido a favor de</option>
+                @for (mag of magistrados(); track mag.idMagistrado) {
+                  <option [value]="mag.idMagistrado">{{ mag.nombre }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="modal-actions-footer d-flex gap-2 p-3 border-top justify-content-start">
+              <button type="button" class="btn btn-primary-save px-4 text-white" [disabled]="dirimidoForm.invalid" (click)="saveData()">Guardar</button>
+              <button type="button" class="btn btn-danger-cancel px-4 text-white" (click)="closeFormModal()">Cancelar</button>
+            </div>
+
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+}
+
+@if (showDeleteModal()) {
+  <div class="modal fade show d-block custom-modal-backdrop" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+      <div class="modal-content text-center border-0 p-3 card-modal">
+        <div class="modal-body">
+          <p class="fs-5 fw-medium mb-4 text-dark">¿Desea Eliminar el Registro?</p>
+          <div class="d-flex justify-content-center gap-3">
+            <button type="button" class="btn btn-danger px-4" (click)="confirmDelete()">SI</button>
+            <button type="button" class="btn btn-secondary px-4" (click)="closeDeleteModal()">NO</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+}
