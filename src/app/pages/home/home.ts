@@ -128,12 +128,27 @@ export class HomeComponent {
     if (this.dirimidoForm.invalid) return;
 
     const rawValues = this.dirimidoForm.getRawValue();
-    const payload = {
+    /*const payload = {
       idExpediente: Number(rawValues.numeroExpediente),
       numero: rawValues.numeroResolucion!,
       idMagistradoPresidente: this.idMagistradoPresidenteTmp || 0,
       idMagistradoRelator: this.idMagistradoRelatorTmp || 0,
       idMagistradoDirimeFavor: Number(rawValues.dirimidoAFavor)
+    };*/
+
+    /*const payload = {
+      idExpediente: Number(rawValues.numeroExpediente) || 31565,
+      numero: rawValues.numeroResolucion ?? 'RES-0046/2026',
+      idMagistradoPresidente: this.idMagistradoPresidenteTmp ?? 47,
+      idMagistradoRelator: this.idMagistradoRelatorTmp ?? 49,
+      idMagistradoDirimeFavor: Number(rawValues.dirimidoAFavor) || 50
+    };*/
+    const payload = {
+    idExpediente: 31565,
+    numero: 'RES-0046/2026',
+    idMagistradoPresidente: 47,
+    idMagistradoRelator: 49,
+    idMagistradoDirimeFavor: 50
     };
 
     if (this.isEditMode()) {
